@@ -4,17 +4,32 @@ interface OpcoesRequisicao extends RequestInit {
   token?: string | null;
 }
 
+function esperar(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function requisitar<T>(caminho: string, opcoes: OpcoesRequisicao = {}): Promise<T> {
   const { token, headers, ...resto } = opcoes;
 
-  const resposta = await fetch(`${URL_BASE}${caminho}`, {
-    ...resto,
-    headers: {
-      ...(opcoes.body && !(opcoes.body instanceof FormData) ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers,
-    },
-  });
+  const cabecalhos = {
+    ...(opcoes.body && !(opcoes.body instanceof FormData) ? { "Content-Type": "application/json" } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...headers,
+  };
+
+  // O backend gratuito "dorme" depois de um tempo sem uso e pode falhar a
+  // primeira tentativa enquanto acorda — tenta de novo antes de desistir.
+  let resposta: Response;
+  try {
+    resposta = await fetch(`${URL_BASE}${caminho}`, { ...resto, headers: cabecalhos });
+  } catch {
+    await esperar(3000);
+    try {
+      resposta = await fetch(`${URL_BASE}${caminho}`, { ...resto, headers: cabecalhos });
+    } catch {
+      throw new Error("Não foi possível conectar ao servidor. Verifique sua internet e tente de novo.");
+    }
+  }
 
   if (resposta.status === 204) return undefined as T;
 

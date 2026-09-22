@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from "react";
 import { Ingrediente, Produto } from "@/lib/api";
 
 export interface ItemCarrinho {
@@ -22,8 +22,35 @@ interface CarrinhoContextoTipo {
 
 const CarrinhoContexto = createContext<CarrinhoContextoTipo | undefined>(undefined);
 
+const CHAVE_ARMAZENAMENTO = "pedidos_carrinho";
+
 export function CarrinhoProvider({ children }: { children: ReactNode }) {
   const [itens, setItens] = useState<ItemCarrinho[]>([]);
+  const carregouDoDisco = useRef(false);
+
+  // Recupera o carrinho salvo assim que a página abre (sobrevive a recarregar
+  // a aba, trocar de app no celular, etc.).
+  useEffect(() => {
+    try {
+      const salvo = localStorage.getItem(CHAVE_ARMAZENAMENTO);
+      if (salvo) setItens(JSON.parse(salvo));
+    } catch {
+      // localStorage indisponível (modo privado, etc.) — segue com carrinho vazio
+    } finally {
+      carregouDoDisco.current = true;
+    }
+  }, []);
+
+  // Só salva depois de já ter carregado, pra não sobrescrever o que tava salvo
+  // com o estado inicial vazio antes da leitura acima terminar.
+  useEffect(() => {
+    if (!carregouDoDisco.current) return;
+    try {
+      localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(itens));
+    } catch {
+      // localStorage indisponível — carrinho segue funcionando só na memória
+    }
+  }, [itens]);
 
   function adicionar(produto: Produto) {
     const chave = `produto-${produto.id}`;
