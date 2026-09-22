@@ -27,6 +27,9 @@ export default function AdminNav({ adminToken }: { adminToken: string | null }) 
         <Link href="/admin/relatorios" className={linkClasse("/admin/relatorios")}>
           Relatórios
         </Link>
+        <Link href="/admin/chat" className={linkClasse("/admin/chat")}>
+          Chat
+        </Link>
       </nav>
       <div className="flex items-center gap-3">
         {adminToken && <NotificacoesAdmin token={adminToken} />}

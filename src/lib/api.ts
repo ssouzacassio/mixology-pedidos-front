@@ -92,6 +92,18 @@ export const api = {
 
   historicoChat: (token: string) => requisitar<Mensagem[]>("/chat/mensagens", { token }),
 
+  listarConversasAdmin: (token: string) => requisitar<ConversaAdmin[]>("/admin/chats", { token }),
+
+  historicoChatAdmin: (token: string, clienteId: number) =>
+    requisitar<Mensagem[]>(`/admin/chats/${clienteId}/mensagens`, { token }),
+
+  enviarChatAdmin: (token: string, clienteId: number, texto: string) =>
+    requisitar<Mensagem>(`/admin/chats/${clienteId}/mensagens`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ texto }),
+    }),
+
   obterPerfil: (token: string) => requisitar<Cliente>("/perfil", { token }),
 
   atualizarPerfil: (token: string, dados: { nome: string; telefone: string }) =>
@@ -241,6 +253,14 @@ export interface Mensagem {
   remetente: "cliente" | "atendente";
   texto: string;
   criadoEm: string;
+}
+
+export interface ConversaAdmin {
+  clienteId: number;
+  nomeCliente: string;
+  ultimaMensagem: string;
+  ultimaEm: string;
+  naoLidas: number;
 }
 
 export interface ProdutoVendido {
