@@ -3,9 +3,8 @@ import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { AutenticacaoProvider } from "@/contexts/AutenticacaoContexto";
 import { CarrinhoProvider } from "@/contexts/CarrinhoContexto";
-import BarraNavegacao from "@/components/BarraNavegacao";
 import ProtegerRotas from "@/components/ProtegerRotas";
-import ChatFlutuante from "@/components/ChatFlutuante";
+import SiteChrome from "@/components/SiteChrome";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,11 +35,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)]">
         <AutenticacaoProvider>
           <CarrinhoProvider>
-            <BarraNavegacao />
-            <main className="flex-1">
+            <SiteChrome>
               <ProtegerRotas>{children}</ProtegerRotas>
-            </main>
-            <ChatFlutuante />
+            </SiteChrome>
           </CarrinhoProvider>
         </AutenticacaoProvider>
       </body>
