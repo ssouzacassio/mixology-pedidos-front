@@ -17,18 +17,25 @@ async function requisitar<T>(caminho: string, opcoes: OpcoesRequisicao = {}): Pr
     ...headers,
   };
 
-  // O backend gratuito "dorme" depois de um tempo sem uso e pode falhar a
-  // primeira tentativa enquanto acorda — tenta de novo antes de desistir.
-  let resposta: Response;
-  try {
-    resposta = await fetch(`${URL_BASE}${caminho}`, { ...resto, headers: cabecalhos });
-  } catch {
-    await esperar(3000);
+  // O backend gratuito "dorme" depois de um tempo sem uso e pode levar até uns
+  // 40-50s pra acordar — insiste várias vezes antes de desistir de vez.
+  const atrasos = [0, 3000, 6000, 8000, 10000, 10000];
+  let resposta: Response | undefined;
+  let ultimoErro: unknown;
+
+  for (const atraso of atrasos) {
+    if (atraso > 0) await esperar(atraso);
     try {
       resposta = await fetch(`${URL_BASE}${caminho}`, { ...resto, headers: cabecalhos });
-    } catch {
-      throw new Error("Não foi possível conectar ao servidor. Verifique sua internet e tente de novo.");
+      break;
+    } catch (erro) {
+      ultimoErro = erro;
     }
+  }
+
+  if (!resposta) {
+    console.error("Falha ao conectar com o backend após várias tentativas:", ultimoErro);
+    throw new Error("Não foi possível conectar ao servidor. Verifique sua internet e tente de novo.");
   }
 
   if (resposta.status === 204) return undefined as T;
