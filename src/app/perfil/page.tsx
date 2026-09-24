@@ -3,6 +3,13 @@
 import { useRef, useState } from "react";
 import { useAutenticacao } from "@/contexts/AutenticacaoContexto";
 import { api, Endereco } from "@/lib/api";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const TOTAL_TICKET = 10;
 
@@ -30,13 +37,13 @@ export default function PaginaPerfil() {
 
 function SecaoFidelidade({ pedidosFidelidade, ticketsCompletos }: { pedidosFidelidade: number; ticketsCompletos: number }) {
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <Card className="p-5 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-[family-name:var(--font-titulo)] text-lg font-semibold">Fidelidade</h2>
         {ticketsCompletos > 0 && (
-          <span className="rounded-full bg-marca-laranja/15 px-2 py-0.5 text-xs font-medium text-marca-laranja">
+          <Badge className="bg-marca-laranja/15 text-marca-laranja hover:bg-marca-laranja/15">
             {ticketsCompletos} ticket{ticketsCompletos > 1 ? "s" : ""} completo{ticketsCompletos > 1 ? "s" : ""}
-          </span>
+          </Badge>
         )}
       </div>
 
@@ -50,7 +57,7 @@ function SecaoFidelidade({ pedidosFidelidade, ticketsCompletos }: { pedidosFidel
               fill="none"
               stroke={preenchida ? "var(--color-marca-vermelho)" : "currentColor"}
               strokeWidth="1.8"
-              className={`h-8 w-8 ${preenchida ? "text-marca-vermelho" : "text-zinc-300"}`}
+              className={`h-8 w-8 ${preenchida ? "text-marca-vermelho" : "text-muted-foreground/40"}`}
             >
               <path
                 d="M5 4h14l-6 8.5V19h3.5"
@@ -65,13 +72,13 @@ function SecaoFidelidade({ pedidosFidelidade, ticketsCompletos }: { pedidosFidel
         })}
       </div>
 
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-muted-foreground">
         {pedidosFidelidade}/{TOTAL_TICKET} pedidos entregues —{" "}
         {TOTAL_TICKET - pedidosFidelidade === 0
           ? "ticket completo!"
           : `faltam ${TOTAL_TICKET - pedidosFidelidade} pra fechar o ticket`}
       </p>
-    </section>
+    </Card>
   );
 }
 
@@ -127,23 +134,15 @@ function SecaoDadosPessoais({
   }
 
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <Card className="p-5 shadow-sm">
       <h2 className="mb-4 font-[family-name:var(--font-titulo)] text-lg font-semibold">Dados pessoais</h2>
 
       <div className="mb-5 flex items-center gap-4">
-        <button
-          onClick={() => inputFotoRef.current?.click()}
-          disabled={enviandoFoto}
-          className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-zinc-200 bg-zinc-100"
-        >
-          {fotoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={fotoUrl} alt={nome} className="h-full w-full object-cover" />
-          ) : (
-            <span className="flex h-full w-full items-center justify-center text-lg font-semibold text-zinc-400">
-              {nome.charAt(0).toUpperCase()}
-            </span>
-          )}
+        <button onClick={() => inputFotoRef.current?.click()} disabled={enviandoFoto} className="shrink-0 rounded-full">
+          <Avatar className="h-16 w-16">
+            <AvatarImage src={fotoUrl} alt={nome} />
+            <AvatarFallback className="text-lg font-semibold">{nome.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
         </button>
         <div>
           <button
@@ -158,34 +157,26 @@ function SecaoDadosPessoais({
       </div>
 
       <div className="space-y-3">
-        <label className="block text-sm">
-          <span className="mb-1 block text-zinc-700">Nome</span>
-          <input
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-marca-vermelho"
-          />
-        </label>
-        <label className="block text-sm">
-          <span className="mb-1 block text-zinc-700">E-mail</span>
-          <input value={email} disabled className="w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-zinc-500" />
-        </label>
-        <label className="block text-sm">
-          <span className="mb-1 block text-zinc-700">Telefone</span>
-          <input
-            value={telefone}
-            onChange={(e) => setTelefone(e.target.value)}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-marca-vermelho"
-          />
-        </label>
+        <div className="space-y-1.5">
+          <Label>Nome</Label>
+          <Input value={nome} onChange={(e) => setNome(e.target.value)} />
+        </div>
+        <div className="space-y-1.5">
+          <Label>E-mail</Label>
+          <Input value={email} disabled />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Telefone</Label>
+          <Input value={telefone} onChange={(e) => setTelefone(e.target.value)} />
+        </div>
 
-        {mensagem && <p className="text-sm text-zinc-500">{mensagem}</p>}
+        {mensagem && <p className="text-sm text-muted-foreground">{mensagem}</p>}
 
-        <button onClick={salvar} disabled={salvando} className="botao-primario px-4 py-2 text-sm">
+        <Button onClick={salvar} disabled={salvando} size="sm">
           {salvando ? "Salvando..." : "Salvar alterações"}
-        </button>
+        </Button>
       </div>
-    </section>
+    </Card>
   );
 }
 
@@ -235,7 +226,7 @@ function SecaoEnderecos({
   }
 
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <Card className="p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-[family-name:var(--font-titulo)] text-lg font-semibold">Meus endereços</h2>
         {!criando && (
@@ -247,67 +238,54 @@ function SecaoEnderecos({
 
       <div className="space-y-2">
         {enderecos.map((item) => (
-          <div key={item.id} className="flex items-center justify-between gap-3 rounded-lg border border-zinc-200 p-3 text-sm">
+          <div key={item.id} className="flex items-center justify-between gap-3 rounded-lg border p-3 text-sm">
             <div>
-              <p className="font-medium">
+              <p className="flex items-center gap-2 font-medium">
                 {item.rotulo || "Endereço"}
                 {item.padrao && (
-                  <span className="ml-2 rounded-full bg-marca-vermelho/10 px-2 py-0.5 text-xs text-marca-vermelho">
+                  <Badge variant="outline" className="border-marca-vermelho/30 text-marca-vermelho">
                     padrão
-                  </span>
+                  </Badge>
                 )}
               </p>
-              <p className="text-zinc-500">{item.endereco}</p>
+              <p className="text-muted-foreground">{item.endereco}</p>
             </div>
             <div className="flex shrink-0 gap-2 text-xs">
               {!item.padrao && (
-                <button onClick={() => definirPadrao(item)} className="text-zinc-500 hover:text-marca-vermelho">
+                <button onClick={() => definirPadrao(item)} className="text-muted-foreground hover:text-marca-vermelho">
                   Tornar padrão
                 </button>
               )}
-              <button onClick={() => remover(item.id)} className="text-zinc-400 hover:text-marca-vermelho">
+              <button onClick={() => remover(item.id)} className="text-muted-foreground hover:text-marca-vermelho">
                 remover
               </button>
             </div>
           </div>
         ))}
-        {enderecos.length === 0 && !criando && <p className="text-sm text-zinc-400">Nenhum endereço cadastrado.</p>}
+        {enderecos.length === 0 && !criando && <p className="text-sm text-muted-foreground">Nenhum endereço cadastrado.</p>}
       </div>
 
       {criando && (
-        <div className="mt-4 space-y-3 rounded-lg border border-zinc-200 p-3">
-          <input
-            placeholder="Rótulo (ex: Casa, Trabalho)"
-            value={rotulo}
-            onChange={(e) => setRotulo(e.target.value)}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-marca-vermelho"
-          />
-          <input
-            placeholder="Endereço completo"
-            value={endereco}
-            onChange={(e) => setEndereco(e.target.value)}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-marca-vermelho"
-          />
-          <label className="flex items-center gap-2 text-sm text-zinc-600">
-            <input type="checkbox" checked={padrao} onChange={(e) => setPadrao(e.target.checked)} className="accent-marca-vermelho" />
+        <div className="mt-4 space-y-3 rounded-lg border p-3">
+          <Input placeholder="Rótulo (ex: Casa, Trabalho)" value={rotulo} onChange={(e) => setRotulo(e.target.value)} />
+          <Input placeholder="Endereço completo" value={endereco} onChange={(e) => setEndereco(e.target.value)} />
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Checkbox checked={padrao} onCheckedChange={(valor) => setPadrao(valor === true)} />
             Usar como padrão
           </label>
 
-          {erro && <p className="text-sm text-marca-vermelho">{erro}</p>}
+          {erro && <p className="text-sm text-destructive">{erro}</p>}
 
           <div className="flex gap-2">
-            <button
-              onClick={() => setCriando(false)}
-              className="flex-1 rounded-md border border-zinc-300 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
-            >
+            <Button variant="outline" onClick={() => setCriando(false)} className="flex-1">
               Cancelar
-            </button>
-            <button onClick={salvarNovo} disabled={salvando} className="botao-primario flex-1 py-2 text-sm">
+            </Button>
+            <Button onClick={salvarNovo} disabled={salvando} className="flex-1">
               {salvando ? "Salvando..." : "Salvar endereço"}
-            </button>
+            </Button>
           </div>
         </div>
       )}
-    </section>
+    </Card>
   );
 }

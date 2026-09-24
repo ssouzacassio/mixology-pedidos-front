@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { api, DrinkSalvo, Ingrediente } from "@/lib/api";
 import { useCarrinho } from "@/contexts/CarrinhoContexto";
 import { useAutenticacao } from "@/contexts/AutenticacaoContexto";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 const MAX_MIXERS = 3;
 
@@ -97,7 +100,7 @@ export default function PaginaMonteSeuDrink() {
       </section>
 
       <div className="mx-auto max-w-4xl px-4 py-8">
-        {carregando && <p className="text-zinc-500">Carregando ingredientes...</p>}
+        {carregando && <p className="text-muted-foreground">Carregando ingredientes...</p>}
 
         {drinksSalvos.length > 0 && (
           <section className="mb-8">
@@ -109,10 +112,10 @@ export default function PaginaMonteSeuDrink() {
                 <button
                   key={drink.id}
                   onClick={() => carregarSalvo(drink)}
-                  className="flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 hover:border-marca-vermelho hover:text-marca-vermelho"
+                  className="flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-sm text-foreground hover:border-marca-vermelho hover:text-marca-vermelho"
                 >
                   {drink.nome}
-                  <span onClick={(e) => removerSalvo(drink.id, e)} className="text-zinc-400 hover:text-marca-vermelho">
+                  <span onClick={(e) => removerSalvo(drink.id, e)} className="text-muted-foreground hover:text-marca-vermelho">
                     ×
                   </span>
                 </button>
@@ -142,7 +145,7 @@ export default function PaginaMonteSeuDrink() {
 
         <section className="mb-8">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-marca-vermelho">
-            Mixer (frutas) <span className="font-normal normal-case text-zinc-400">— escolha até 3, selecionadas: {mixers.length}/{MAX_MIXERS}</span>
+            Mixer (frutas) <span className="font-normal normal-case text-muted-foreground">— escolha até 3, selecionadas: {mixers.length}/{MAX_MIXERS}</span>
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
             {ingredientes
@@ -178,13 +181,12 @@ export default function PaginaMonteSeuDrink() {
           </div>
         </section>
 
-        <div className="sticky bottom-4 mt-6 space-y-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-lg">
-          <input
+        <Card className="sticky bottom-4 mt-6 gap-3 p-4 shadow-lg">
+          <Input
             type="text"
             value={nomeDrink}
             onChange={(e) => setNomeDrink(e.target.value)}
             placeholder="Dê um nome pro seu drink (opcional)"
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-marca-vermelho"
           />
 
           <div className="flex items-center justify-between text-base font-semibold">
@@ -194,34 +196,31 @@ export default function PaginaMonteSeuDrink() {
 
           {adicionado ? (
             <div className="flex items-center justify-between gap-3">
-              <p className="text-sm text-zinc-500">Adicionado ao carrinho!</p>
-              <button onClick={() => router.push("/carrinho")} className="botao-primario px-4 py-2 text-sm">
+              <p className="text-sm text-muted-foreground">Adicionado ao carrinho!</p>
+              <Button onClick={() => router.push("/carrinho")} size="sm">
                 Ver carrinho
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="flex gap-2">
-              <button
-                onClick={adicionarAoCarrinho}
-                disabled={!completo}
-                className="botao-primario flex-1 py-2 disabled:opacity-40"
-              >
+              <Button onClick={adicionarAoCarrinho} disabled={!completo} className="flex-1">
                 {completo ? "Adicionar ao carrinho" : "Escolha base, ao menos 1 fruta e um extra"}
-              </button>
+              </Button>
               {token && (
-                <button
+                <Button
+                  variant="outline"
                   onClick={salvarDrink}
                   disabled={!completo || !nomeDrink.trim() || salvando}
                   title={!nomeDrink.trim() ? "Dê um nome pra poder salvar" : undefined}
-                  className="rounded-md border border-marca-vermelho px-4 py-2 text-sm font-medium text-marca-vermelho hover:bg-marca-vermelho/5 disabled:opacity-40"
+                  className="border-marca-vermelho text-marca-vermelho hover:bg-marca-vermelho/5"
                 >
                   {salvando ? "Salvando..." : "Salvar"}
-                </button>
+                </Button>
               )}
             </div>
           )}
-          {mensagemSalvar && <p className="text-sm text-zinc-500">{mensagemSalvar}</p>}
-        </div>
+          {mensagemSalvar && <p className="text-sm text-muted-foreground">{mensagemSalvar}</p>}
+        </Card>
       </div>
     </div>
   );
@@ -243,11 +242,11 @@ function BotaoIngrediente({
       onClick={onClick}
       disabled={desabilitado}
       className={`flex items-center justify-between gap-2 rounded-xl border p-3 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-        selecionado ? "border-marca-vermelho bg-marca-vermelho/5" : "border-zinc-200 bg-white hover:border-zinc-300"
+        selecionado ? "border-marca-vermelho bg-marca-vermelho/5" : "bg-card hover:border-foreground/20"
       }`}
     >
-      <span className={selecionado ? "font-medium text-marca-vermelho" : "text-zinc-700"}>{ingrediente.nome}</span>
-      <span className="text-xs text-zinc-400">
+      <span className={selecionado ? "font-medium text-marca-vermelho" : "text-foreground"}>{ingrediente.nome}</span>
+      <span className="text-xs text-muted-foreground">
         {ingrediente.preco > 0 ? `R$ ${ingrediente.preco.toFixed(2).replace(".", ",")}` : "grátis"}
       </span>
     </button>

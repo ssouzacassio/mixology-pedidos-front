@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api, Produto } from "@/lib/api";
 import { useCarrinho } from "@/contexts/CarrinhoContexto";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export default function PaginaCardapio() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -45,11 +47,11 @@ export default function PaginaCardapio() {
           </svg>
         </Link>
 
-        {carregando && <p className="text-zinc-500">Carregando cardápio...</p>}
-        {erro && <p className="text-marca-vermelho">{erro}</p>}
+        {carregando && <p className="text-muted-foreground">Carregando cardápio...</p>}
+        {erro && <p className="text-destructive">{erro}</p>}
 
         {!carregando && !erro && produtos.length === 0 && (
-          <p className="text-zinc-500">Nenhum produto disponível no momento.</p>
+          <p className="text-muted-foreground">Nenhum produto disponível no momento.</p>
         )}
 
         {categorias.map((categoria) => (
@@ -61,26 +63,23 @@ export default function PaginaCardapio() {
               {produtos
                 .filter((p) => (p.categoria || "Outros") === categoria)
                 .map((produto) => (
-                  <div
+                  <Card
                     key={produto.id}
-                    className="group flex items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
+                    className="flex-row items-center justify-between gap-3 p-4 shadow-sm transition-shadow hover:shadow-md"
                   >
                     <div>
-                      <p className="font-medium text-zinc-900">{produto.nome}</p>
+                      <p className="font-medium text-foreground">{produto.nome}</p>
                       {produto.descricao && (
-                        <p className="mt-0.5 text-sm text-zinc-500">{produto.descricao}</p>
+                        <p className="mt-0.5 text-sm text-muted-foreground">{produto.descricao}</p>
                       )}
                       <p className="mt-2 text-sm font-semibold text-marca-vermelho">
                         R$ {produto.preco.toFixed(2).replace(".", ",")}
                       </p>
                     </div>
-                    <button
-                      onClick={() => adicionar(produto)}
-                      className="botao-primario shrink-0 px-3 py-1.5 text-sm"
-                    >
+                    <Button onClick={() => adicionar(produto)} size="sm" className="shrink-0">
                       Adicionar
-                    </button>
-                  </div>
+                    </Button>
+                  </Card>
                 ))}
             </div>
           </section>

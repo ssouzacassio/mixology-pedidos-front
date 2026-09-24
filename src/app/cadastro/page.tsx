@@ -6,6 +6,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAutenticacao } from "@/contexts/AutenticacaoContexto";
 import FundoBolhas from "@/components/FundoBolhas";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function PaginaCadastro() {
   return (
@@ -47,45 +51,44 @@ function FormularioCadastro() {
     <div className="relative flex min-h-[calc(100vh-57px)] items-center justify-center overflow-hidden bg-gradient-to-br from-marca-azul/15 via-[var(--background)] to-marca-laranja/10 p-4 py-10">
       <FundoBolhas />
 
-      <form
-        onSubmit={aoEnviar}
-        className="animar-surgir relative flex w-full max-w-sm flex-col gap-4 overflow-hidden rounded-xl bg-white p-8 shadow-xl"
-      >
-        <div className="-mx-8 -mt-8 mb-2 h-1.5 bg-gradient-to-r from-marca-vermelho via-marca-laranja to-marca-azul" />
+      <Card className="animar-surgir relative w-full max-w-sm gap-0 py-0 shadow-xl">
+        <form onSubmit={aoEnviar} className="flex flex-col gap-4 p-8">
+          <div className="-mx-8 -mt-8 mb-2 h-1.5 bg-gradient-to-r from-marca-vermelho via-marca-laranja to-marca-azul" />
 
-        <Image
-          src="/marca/logo-colorida.png"
-          alt="Mixology Drinkeria"
-          width={200}
-          height={58}
-          className="mx-auto mb-2 mt-4"
-          priority
-        />
+          <Image
+            src="/marca/logo-colorida.png"
+            alt="Mixology Drinkeria"
+            width={200}
+            height={58}
+            className="mx-auto mb-2 mt-4"
+            priority
+          />
 
-        <h1 className="text-center text-2xl font-semibold tracking-tight text-zinc-900">Criar conta</h1>
+          <h1 className="text-center text-2xl font-semibold tracking-tight text-foreground">Criar conta</h1>
 
-        <Campo rotulo="Nome" valor={nome} aoMudar={setNome} obrigatorio />
-        <Campo rotulo="E-mail" tipo="email" valor={email} aoMudar={setEmail} obrigatorio />
-        <Campo rotulo="Senha" tipo="password" valor={senha} aoMudar={setSenha} obrigatorio minimo={6} />
-        <Campo rotulo="Telefone" valor={telefone} aoMudar={setTelefone} obrigatorio />
-        <Campo rotulo="Endereço" valor={endereco} aoMudar={setEndereco} obrigatorio />
+          <Campo rotulo="Nome" valor={nome} aoMudar={setNome} obrigatorio />
+          <Campo rotulo="E-mail" tipo="email" valor={email} aoMudar={setEmail} obrigatorio />
+          <Campo rotulo="Senha" tipo="password" valor={senha} aoMudar={setSenha} obrigatorio minimo={6} />
+          <Campo rotulo="Telefone" valor={telefone} aoMudar={setTelefone} obrigatorio />
+          <Campo rotulo="Endereço" valor={endereco} aoMudar={setEndereco} obrigatorio />
 
-        {erro && <p className="text-sm text-marca-vermelho">{erro}</p>}
+          {erro && <p className="text-sm text-destructive">{erro}</p>}
 
-        <button type="submit" disabled={enviando} className="botao-primario w-full py-2">
-          {enviando ? "Criando conta..." : "Criar conta"}
-        </button>
+          <Button type="submit" disabled={enviando} className="w-full">
+            {enviando ? "Criando conta..." : "Criar conta"}
+          </Button>
 
-        <p className="text-center text-sm text-zinc-500">
-          Já tem conta?{" "}
-          <Link
-            href={`/login${retorno !== "/" ? `?retorno=${encodeURIComponent(retorno)}` : ""}`}
-            className="font-medium text-marca-vermelho hover:underline"
-          >
-            Entrar
-          </Link>
-        </p>
-      </form>
+          <p className="text-center text-sm text-muted-foreground">
+            Já tem conta?{" "}
+            <Link
+              href={`/login${retorno !== "/" ? `?retorno=${encodeURIComponent(retorno)}` : ""}`}
+              className="font-medium text-marca-vermelho hover:underline"
+            >
+              Entrar
+            </Link>
+          </p>
+        </form>
+      </Card>
     </div>
   );
 }
@@ -106,16 +109,15 @@ function Campo({
   minimo?: number;
 }) {
   return (
-    <label className="block text-sm">
-      <span className="mb-1 block text-zinc-700">{rotulo}</span>
-      <input
+    <div className="space-y-1.5">
+      <Label>{rotulo}</Label>
+      <Input
         type={tipo}
         value={valor}
         onChange={(e) => aoMudar(e.target.value)}
         required={obrigatorio}
         minLength={minimo}
-        className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-marca-vermelho"
       />
-    </label>
+    </div>
   );
 }

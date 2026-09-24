@@ -6,6 +6,11 @@ import Link from "next/link";
 import { useCarrinho } from "@/contexts/CarrinhoContexto";
 import { useAutenticacao } from "@/contexts/AutenticacaoContexto";
 import { api, FormaPagamento, ItemPedidoEntrada, Pedido } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const OPCOES_PAGAMENTO: { valor: FormaPagamento; texto: string }[] = [
   { valor: "pix", texto: "Pix" },
@@ -71,28 +76,28 @@ export default function PaginaCarrinho() {
     return (
       <div className="mx-auto max-w-md px-4 py-10 text-center">
         <h1 className="mb-2 text-2xl font-semibold tracking-tight">Pedido #{pedidoCriado.id} recebido!</h1>
-        <p className="mb-4 text-sm text-zinc-500">
+        <p className="mb-4 text-sm text-muted-foreground">
           Itens: R$ {(pedidoCriado.valorTotal - pedidoCriado.valorFrete).toFixed(2).replace(".", ",")} + Entrega: R${" "}
           {pedidoCriado.valorFrete.toFixed(2).replace(".", ",")} = <strong>R$ {pedidoCriado.valorTotal.toFixed(2).replace(".", ",")}</strong>
         </p>
 
         {cobrancaPix ? (
           <>
-            <p className="mb-6 text-zinc-500">Finalize o pagamento via Pix para confirmar.</p>
-            <div className="animar-surgir overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
+            <p className="mb-6 text-muted-foreground">Finalize o pagamento via Pix para confirmar.</p>
+            <Card className="animar-surgir gap-0 overflow-hidden py-0 shadow-sm">
               <div className="h-1.5 bg-gradient-to-r from-marca-vermelho via-marca-laranja to-marca-azul" />
               <div className="p-6">
-                <p className="text-sm text-zinc-500">Valor a pagar</p>
+                <p className="text-sm text-muted-foreground">Valor a pagar</p>
                 <p className="mb-4 text-2xl font-semibold text-marca-vermelho">
                   R$ {cobrancaPix.valor.toFixed(2).replace(".", ",")}
                 </p>
-                <p className="mb-1 text-sm text-zinc-500">Pix copia e cola</p>
-                <p className="break-all rounded-md bg-zinc-100 p-3 font-mono text-xs">{cobrancaPix.copiaECola}</p>
+                <p className="mb-1 text-sm text-muted-foreground">Pix copia e cola</p>
+                <p className="break-all rounded-md bg-muted p-3 font-mono text-xs">{cobrancaPix.copiaECola}</p>
               </div>
-            </div>
+            </Card>
           </>
         ) : (
-          <p className="mb-6 text-zinc-500">
+          <p className="mb-6 text-muted-foreground">
             Pagamento no {formaPagamento === "credito" ? "crédito" : "débito"} na maquininha, na hora da entrega.
           </p>
         )}
@@ -107,7 +112,7 @@ export default function PaginaCarrinho() {
   if (itens.length === 0) {
     return (
       <div className="mx-auto max-w-md px-4 py-10 text-center">
-        <p className="mb-4 text-zinc-500">Seu carrinho está vazio.</p>
+        <p className="mb-4 text-muted-foreground">Seu carrinho está vazio.</p>
         <Link href="/" className="font-medium text-marca-vermelho hover:underline">
           Ver cardápio
         </Link>
@@ -125,41 +130,38 @@ export default function PaginaCarrinho() {
           const preco = item.produto?.preco ?? item.personalizado?.preco ?? 0;
           const subtitulo = item.personalizado?.nomePersonalizado ? item.personalizado.nome : null;
           return (
-            <div
-              key={item.chave}
-              className="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-3 shadow-sm"
-            >
+            <Card key={item.chave} className="flex-row items-center justify-between gap-3 p-3 shadow-sm">
               <div>
                 <p className="font-medium">{nome}</p>
-                {subtitulo && <p className="text-xs text-zinc-400">{subtitulo}</p>}
-                <p className="text-sm text-zinc-500">R$ {preco.toFixed(2).replace(".", ",")} cada</p>
+                {subtitulo && <p className="text-xs text-muted-foreground">{subtitulo}</p>}
+                <p className="text-sm text-muted-foreground">R$ {preco.toFixed(2).replace(".", ",")} cada</p>
               </div>
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   type="number"
                   min={1}
                   value={item.quantidade}
                   onChange={(e) => definirQuantidade(item.chave, Number(e.target.value))}
-                  className="w-14 rounded-md border border-zinc-300 px-2 py-1 text-center"
+                  className="w-14 text-center"
                 />
-                <button onClick={() => remover(item.chave)} className="text-sm text-zinc-400 hover:text-marca-vermelho">
+                <button onClick={() => remover(item.chave)} className="text-sm text-muted-foreground hover:text-marca-vermelho">
                   remover
                 </button>
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>
 
-      <div className="mb-6 space-y-2 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-        <p className="text-sm font-medium text-zinc-700">
-          Entrega <span className="font-normal text-zinc-400">— por enquanto só fazemos delivery</span>
+      <Card className="mb-6 gap-2 p-4 shadow-sm">
+        <p className="text-sm font-medium text-foreground">
+          Entrega <span className="font-normal text-muted-foreground">— por enquanto só fazemos delivery</span>
         </p>
         {cliente && cliente.enderecos.length > 0 ? (
           <select
             value={enderecoId}
             onChange={(e) => setEnderecoId(Number(e.target.value))}
-            className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-marca-vermelho"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-3 focus:ring-ring/50"
           >
             {cliente.enderecos.map((endereco) => (
               <option key={endereco.id} value={endereco.id}>
@@ -169,7 +171,7 @@ export default function PaginaCarrinho() {
             ))}
           </select>
         ) : (
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-muted-foreground">
             {cliente ? (
               <>
                 Nenhum endereço cadastrado.{" "}
@@ -183,43 +185,40 @@ export default function PaginaCarrinho() {
             )}
           </p>
         )}
-      </div>
+      </Card>
 
-      <div className="mb-6 space-y-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-        <p className="text-sm font-medium text-zinc-700">Forma de pagamento</p>
-        <div className="flex gap-4 text-sm">
+      <Card className="mb-6 gap-3 p-4 shadow-sm">
+        <p className="text-sm font-medium text-foreground">Forma de pagamento</p>
+        <RadioGroup
+          value={formaPagamento}
+          onValueChange={(valor) => setFormaPagamento(valor as FormaPagamento)}
+          className="grid-flow-col justify-start gap-4"
+        >
           {OPCOES_PAGAMENTO.map((opcao) => (
-            <label key={opcao.valor} className="flex items-center gap-2">
-              <input
-                type="radio"
-                checked={formaPagamento === opcao.valor}
-                onChange={() => setFormaPagamento(opcao.valor)}
-                className="accent-marca-vermelho"
-              />
-              {opcao.texto}
-            </label>
+            <div key={opcao.valor} className="flex items-center gap-2">
+              <RadioGroupItem value={opcao.valor} id={`pagamento-${opcao.valor}`} />
+              <Label htmlFor={`pagamento-${opcao.valor}`} className="font-normal">
+                {opcao.texto}
+              </Label>
+            </div>
           ))}
-        </div>
+        </RadioGroup>
         {formaPagamento !== "pix" && (
-          <p className="text-xs text-zinc-400">Pagamento na maquininha, na hora da entrega.</p>
+          <p className="text-xs text-muted-foreground">Pagamento na maquininha, na hora da entrega.</p>
         )}
-      </div>
+      </Card>
 
       <div className="mb-2 flex items-center justify-between text-lg font-semibold">
         <span>Subtotal</span>
         <span className="text-marca-vermelho">R$ {total.toFixed(2).replace(".", ",")}</span>
       </div>
-      <p className="mb-6 text-xs text-zinc-400">+ taxa de entrega, calculada ao confirmar o pedido</p>
+      <p className="mb-6 text-xs text-muted-foreground">+ taxa de entrega, calculada ao confirmar o pedido</p>
 
-      {erro && <p className="mb-4 text-sm text-marca-vermelho">{erro}</p>}
+      {erro && <p className="mb-4 text-sm text-destructive">{erro}</p>}
 
-      <button
-        onClick={finalizarPedido}
-        disabled={enviando || (!!cliente && !enderecoId)}
-        className="botao-primario w-full py-2"
-      >
+      <Button onClick={finalizarPedido} disabled={enviando || (!!cliente && !enderecoId)} className="w-full">
         {enviando ? "Enviando pedido..." : cliente ? "Finalizar pedido" : "Criar conta e finalizar pedido"}
-      </button>
+      </Button>
     </div>
   );
 }
